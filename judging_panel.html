@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Learn Project — Inuka Fellowship Hackathon 2 Judge Portal</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.0/index.min.css">
+<style>
+  * { font-family: 'Inter', sans-serif; }
+
+  :root {
+    --plp-navy: #0d1b3e;
+    --plp-blue: #1a3a8f;
+    --plp-cyan: #00d4ff;
+    --plp-magenta: #e91e63;
+    --plp-pink: #ff4081;
+    --plp-orange: #ff9800;
+    --plp-amber: #ffc107;
+    --plp-burgundy: #880e4f;
+    --plp-purple: #7c4dff;
+    --plp-teal: #00e5c8;
+  }
+
+  body {
+    background: linear-gradient(135deg, #060e24 0%, #0d1b3e 30%, #1a0a2e 60%, #0d1b3e 100%);
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(0,212,255,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(233,30,99,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(124,77,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  main, header, nav { position: relative; z-index: 1; }
+
+  .glass {
+    background: rgba(255,255,255,0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #00d4ff 0%, #7c4dff 40%, #e91e63 70%, #ff9800 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-cyan {
+    background: linear-gradient(135deg, #00d4ff, #00e5c8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-magenta {
+    background: linear-gradient(135deg, #e91e63, #ff4081);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .btn-animated {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-animated::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  .btn-animated:hover::before { width: 300px; height: 300px; }
+  .btn-animated:active { transform: scale(0.96); }
+  .btn-animated:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,212,255,0.25); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #00d4ff, #7c4dff);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 8px 30px rgba(0,212,255,0.5);
+  }
+
+  .btn-magenta {
+    background: linear-gradient(135deg, #e91e63, #7c4dff);
+    box-shadow: 0 4px 20px rgba(233,30,99,0.3);
+  }
+
+  .team-btn {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .team-btn:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0,212,255,0.4);
+    box-shadow: 0 8px 25px rgba(0,212,255,0.15);
+  }
+  .team-btn.active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.12), rgba(124,77,255,0.12), rgba(233,30,99,0.08));
+    border-color: #00d4ff;
+    box-shadow: 0 0 25px rgba(0,212,255,0.2), inset 0 0 20px rgba(124,77,255,0.05);
+  }
+
+  .score-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, rgba(0,212,255,0.15), rgba(124,77,255,0.15), rgba(233,30,99,0.15));
+    outline: none;
+  }
+  .score-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00d4ff, #7c4dff);
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0,212,255,0.6), 0 0 30px rgba(124,77,255,0.3);
+    transition: transform 0.2s;
+    border: 2px solid rgba(255,255,255,0.3);
+  }
+  .score-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
+
+  .leaderboard-row {
+    animation: slideIn 0.4s ease forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .pulse-dot {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,200,0.7); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0,229,200,0); }
+  }
+
+  .medal-gold { background: linear-gradient(135deg, #ffc107, #ff9800); box-shadow: 0 4px 20px rgba(255,152,0,0.4); }
+  .medal-silver { background: linear-gradient(135deg, #b0bec5, #78909c); box-shadow: 0 4px 20px rgba(120,144,156,0.4); }
+  .medal-bronze { background: linear-gradient(135deg, #ff7043, #e64a19); box-shadow: 0 4px 20px rgba(230,74,25,0.4); }
+
+  .tab-active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.12), rgba(124,77,255,0.12));
+    border-color: #00d4ff !important;
+    color: #00d4ff !important;
+  }
+
+  .fade-in { animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .african-border {
+    background: linear-gradient(90deg, #ff9800, #e91e63, #7c4dff, #00d4ff, #00e5c8, #ff9800);
+    background-size: 200% 100%;
+    animation: borderShift 4s linear infinite;
+  }
+  @keyframes borderShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+  }
+
+  .network-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    opacity: 0.04;
+    background-image:
+      radial-gradient(circle at 25% 25%, #00d4ff 1px, transparent 1px),
+      radial-gradient(circle at 75% 75%, #e91e63 1px, transparent 1px),
+      radial-gradient(circle at 50% 50%, #7c4dff 1px, transparent 1px);
+    background-size: 60px 60px, 80px 80px, 100px 100px;
+    pointer-events: none;
+  }
+
+  .crit-card {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+  }
+  .crit-card:hover {
+    border-left-color: #00d4ff;
+    background: rgba(0,212,255,0.03);
+  }
+
+  .plp-logo-mark {
+    background: linear-gradient(135deg, #00d4ff, #7c4dff, #e91e63);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #00d4ff, #7c4dff); border-radius: 3px; }
+
+  .save-toast {
+    animation: toastIn 0.4s ease, toastOut 0.4s ease 2.6s forwards;
+  }
+  @keyframes toastIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+  @keyframes toastOut { to { opacity:0; transform: translateY(-20px); } }
+
+  .score-badge {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,77,255,0.15));
+    border: 1px solid rgba(0,212,255,0.3);
+  }
+
+  .header-glow {
+    box-shadow: 0 4px 40px rgba(0,212,255,0.08), 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  .float-anim { animation: float 3s ease-in-out infinite; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<div class="network-bg"></div>
+
+<!-- Header -->
+<header class="header-glow border-b border-white/5 px-6 py-5">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl font-black float-anim relative overflow-hidden" style="background: linear-gradient(135deg, #00d4ff, #7c4dff, #e91e63);">
+        <span class="text-white drop-shadow-lg">⚡</span>
+        <div class="absolute inset-0 bg-gradient-to-br from-transparent via-white/10 to-transparent"></div>
+      </div>
+      <div>
+        <h1 class="text-xl md:text-2xl font-bold gradient-text">Inuka Fellowship Hackathon 2</h1>
+        <p class="text-xs md:text-sm text-slate-400 flex items-center gap-2">
+          <span class="pulse-dot inline-block w-2 h-2 rounded-full" style="background: #00e5c8;"></span>
+          Power Learn Project · Judge Evaluation Portal — Stage 2
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="exportResults()" class="btn-animated px-4 py-2.5 rounded-lg glass text-sm font-medium hover:bg-white/10 flex items-center gap-2">
+        <span>📥</span> Export CSV
+      </button>
+      <button onclick="resetAll()" class="btn-animated px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-red-500/20 flex items-center gap-2" style="background: rgba(233,30,99,0.1); border: 1px solid rgba(233,30,99,0.3); color: #ff4081;">
+        <span></span> Reset
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Animated top border -->
+<div class="african-border h-1 w-full"></div>
+
+<!-- Tab Navigation -->
+<nav class="border-b border-white/5 px-6 py-3">
+  <div class="max-w-7xl mx-auto flex gap-2 flex-wrap">
+    <button onclick="switchTab('judge')" id="tab-judge" class="tab-active btn-animated px-5 py-2.5 rounded-lg text-sm font-semibold border border-transparent transition-all">
+      🎯 Judge Scores
+    </button>
+    <button onclick="switchTab('leaderboard')" id="tab-leaderboard" class="btn-animated px-5 py-2.5 rounded-lg text-sm font-semibold border border-transparent text-slate-400 hover:text-white transition-all">
+      🏆 Leaderboard
+    </button>
+    <button onclick="switchTab('rubric')" id="tab-rubric" class="btn-animated px-5 py-2.5 rounded-lg text-sm font-semibold border border-transparent text-slate-400 hover:text-white transition-all">
+      📋 Rubric Guide
+    </button>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 py-8">
+
+  <!-- JUDGE TAB -->
+  <section id="view-judge" class="fade-in">
+    <!-- Team Selector -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+        <span class="gradient-text-cyan text-xl">⚡</span>
+        <span class="text-slate-200">Select Team to Evaluate</span>
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="team-grid"></div>
+    </div>
+
+    <!-- Scoring Panel -->
+    <div id="scoring-panel" class="glass rounded-2xl p-6 md:p-8 hidden">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-6 border-b border-white/5">
+        <div>
+          <h3 class="text-2xl font-bold" id="current-team-name">—</h3>
+          <p class="text-sm text-slate-400 mt-1">Weighted total: <span class="text-2xl font-bold gradient-text" id="total-score">0.00</span> <span class="text-sm text-slate-500">/ 100</span></p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="saveScores()" class="btn-animated btn-primary px-6 py-3 rounded-xl font-semibold text-sm text-white">
+             Save Scores
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-5" id="criteria-container"></div>
+
+      <!-- Notes -->
+      <div class="mt-8 pt-6 border-t border-white/5">
+        <label class="block text-sm font-semibold text-slate-300 mb-2 flex items-center gap-2">
+          <span>📝</span> Judge Notes <span class="text-xs text-slate-500 font-normal">(optional)</span>
+        </label>
+        <textarea id="judge-notes" rows="3" placeholder="Add any comments about this team's presentation..."
+          class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-sm text-slate-200 focus:outline-none focus:border-cyan-500/50 transition-colors resize-none placeholder-slate-600"></textarea>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="glass rounded-2xl p-12 text-center">
+      <div class="text-7xl mb-4 float-anim">⚡</div>
+      <h3 class="text-xl font-semibold text-slate-200">Select a team above to begin judging</h3>
+      <p class="text-sm text-slate-500 mt-2">Evaluate each criterion using the sliders below</p>
+      <div class="flex justify-center gap-1 mt-6">
+        <div class="w-8 h-1 rounded-full" style="background: #00d4ff;"></div>
+        <div class="w-8 h-1 rounded-full" style="background: #7c4dff;"></div>
+        <div class="w-8 h-1 rounded-full" style="background: #e91e63;"></div>
+        <div class="w-8 h-1 rounded-full" style="background: #ff9800;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD TAB -->
+  <section id="view-leaderboard" class="hidden fade-in">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+      <div>
+        <h2 class="text-2xl font-bold gradient-text">🏆 Team Rankings</h2>
+        <p class="text-sm text-slate-400 mt-1">Teams ranked by weighted total score · #PowerCommunity</p>
+      </div>
+      <button onclick="refreshLeaderboard()" class="btn-animated px-5 py-2.5 rounded-lg glass text-sm font-medium flex items-center gap-2">
+        🔄 Refresh
+      </button>
+    </div>
+
+    <!-- Top 3 Podium -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" id="podium"></div>
+
+    <!-- Full Leaderboard -->
+    <div class="glass rounded-2xl overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-white/5 text-left text-xs uppercase tracking-wider text-slate-400">
+              <th class="p-4">#</th>
+              <th class="p-4">Team</th>
+              <th class="p-4">Relevance (25%)</th>
+              <th class="p-4">Technical (25%)</th>
+              <th class="p-4">Insight (20%)</th>
+              <th class="p-4">Usability (15%)</th>
+              <th class="p-4">Presentation (15%)</th>
+              <th class="p-4 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- RUBRIC TAB -->
+  <section id="view-rubric" class="hidden fade-in">
+    <h2 class="text-2xl font-bold gradient-text mb-2">📋 Grading Rubric — Stage 2</h2>
+    <p class="text-sm text-slate-400 mb-6">Stage 2 accounts for <strong class="gradient-text-cyan">35%</strong> of the total score. Focus: Analytics, Automation, AI, and User Experience.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="rubric-cards"></div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/5 px-6 py-6 mt-12">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+    <div class="flex items-center gap-2">
+      <span class="text-lg"></span>
+      <span>Power Learn Project · Inuka Fellowship Hackathon 2</span>
+    </div>
+    <div class="gradient-text-magenta font-semibold text-sm">#PowerCommunity</div>
+  </div>
+</footer>
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2"></div>
+
+<script>
+const TEAMS = [
+  { id: 'apex', name: 'Apex Innovators', icon: '', color: '#00d4ff' },
+  { id: 'avengers', name: 'Avengers', icon: '⚡', color: '#e91e63' },
+  { id: 'ftg', name: 'FTG', icon: '🔥', color: '#ff9800' },
+  { id: 'gentech', name: 'Gen-Tech', icon: '🧬', color: '#00e5c8' },
+  { id: 'null', name: 'Null Terminators', icon: '🔴', color: '#7c4dff' },
+  { id: 'scaffold', name: 'Scaffold', icon: '🏗️', color: '#ff7043' },
+  { id: 'synergy', name: 'Synergy', icon: '🔗', color: '#2dd4bf' },
+  { id: 'vertex', name: 'Vertex G', icon: '💎', color: '#ff4081' }
+];
+
+const CRITERIA = [
+  {
+    id: 'relevance',
+    name: 'Relevance to Inuka Impact & Efficiency',
+    weight: 25,
+    icon: '🎯',
+    color: '#00d4ff',
+    description: 'Does the solution directly address one of the 10 problem statements? Does it tangibly improve beneficiary experience, field operations, or internal administrative efficiency? Has scope remained focused?'
+  },
+  {
+    id: 'technical',
+    name: 'Technical Quality & Integration',
+    weight: 25,
+    icon: '⚙️',
+    color: '#7c4dff',
+    description: 'The Linkup Check: How well does it build upon and upgrade the Stage 1 data foundation? Sound engineering: robust offline-sync logic, defensible AI models, reliable APIs, and strong QA/UAT evidence.'
+  },
+  {
+    id: 'insight',
+    name: 'Insight, M&E Value & Quantified ROI',
+    weight: 20,
+    icon: '',
+    color: '#e91e63',
+    description: 'Are the operational benefits quantified and credible? (e.g., hours saved, error reduction rates, beneficiaries reached). Are the assumptions honest? Is there a clear cost-benefit narrative for the Foundation?'
+  },
+  {
+    id: 'usability',
+    name: 'Usability, Accessibility & Deployability',
+    weight: 15,
+    icon: '📱',
+    color: '#ff9800',
+    description: 'Is the UX tailored to the end-user? (e.g., Mobile-first & offline-capable for field officers; intuitive & multilingual for beneficiaries; clean & live for the M&E dashboard). Is it ready for pilot deployment?'
+  },
+  {
+    id: 'presentation',
+    name: 'Presentation & Storytelling',
+    weight: 15,
+    icon: '',
+    color: '#00e5c8',
+    description: 'Clear, confident communication pitched to Inuka Foundation leadership. The narrative should seamlessly connect the technical solution to the human impact on beneficiaries and the Foundation\'s strategic goals.'
+  }
+];
+
+let scores = {};
+let currentTeam = null;
+
+TEAMS.forEach(t => {
+  scores[t.id] = { relevance: 0, technical: 0, insight: 0, usability: 0, presentation: 0, notes: '' };
+});
+
+try {
+  const saved = localStorage.getItem('inuka_plp_scores');
+  if (saved) scores = JSON.parse(saved);
+} catch(e) {}
+
+function renderTeamGrid() {
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = TEAMS.map(t => {
+    const total = calcTotal(t.id);
+    const scored = Object.values(scores[t.id]).some(v => typeof v === 'number' && v > 0);
+    return `
+      <button onclick="selectTeam('${t.id}')" class="team-btn glass rounded-xl p-4 text-left ${currentTeam === t.id ? 'active' : ''}" id="team-btn-${t.id}">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-2xl">${t.icon}</span>
+          ${scored ? `<span class="score-badge text-xs px-2 py-1 rounded-full font-mono" style="color: ${t.color};">${total.toFixed(1)}</span>` : '<span class="text-xs px-2 py-1 rounded-full bg-white/5 text-slate-500">—</span>'}
+        </div>
+        <div class="font-semibold text-sm text-slate-200">${t.name}</div>
+        <div class="w-full h-1.5 bg-white/5 rounded-full mt-3 overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700" style="width:${total}%; background: linear-gradient(90deg, ${t.color}, #7c4dff);"></div>
+        </div>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderCriteria() {
+  const container = document.getElementById('criteria-container');
+  container.innerHTML = CRITERIA.map(c => `
+    <div class="crit-card glass rounded-xl p-5" id="crit-${c.id}" style="border-left-color: ${c.color}30;">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">${c.icon}</span>
+          <div>
+            <h4 class="font-semibold text-slate-100">${c.name}</h4>
+            <p class="text-xs text-slate-400 mt-0.5 leading-relaxed max-w-xl">${c.description}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 md:ml-4 flex-shrink-0">
+          <span class="text-xs px-2.5 py-1 rounded-full font-mono whitespace-nowrap" style="background: ${c.color}15; color: ${c.color}; border: 1px solid ${c.color}30;">Weight: ${c.weight}%</span>
+          <div class="text-right">
+            <div class="text-2xl font-bold font-mono" id="score-val-${c.id}" style="color: ${c.color};">${currentTeam ? scores[currentTeam][c.id] : 0}</div>
+            <div class="text-xs text-slate-500">/ 100</div>
+          </div>
+        </div>
+      </div>
+      <input type="range" min="0" max="100" step="1" value="${currentTeam ? scores[currentTeam][c.id] : 0}"
+        class="score-slider w-full" id="slider-${c.id}"
+        oninput="updateScore('${c.id}', this.value)"
+        style="background: linear-gradient(90deg, ${c.color}40, ${c.color}15);">
+      <div class="flex justify-between text-xs text-slate-500 mt-1.5">
+        <span>Poor</span><span>Fair</span><span>Good</span><span>Excellent</span><span>Outstanding</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectTeam(id) {
+  currentTeam = id;
+  const team = TEAMS.find(t => t.id === id);
+  document.getElementById('current-team-name').innerHTML = `<span class="mr-2">${team.icon}</span> ${team.name}`;
+  document.getElementById('scoring-panel').classList.remove('hidden');
+  document.getElementById('empty-state').classList.add('hidden');
+  document.getElementById('judge-notes').value = scores[id].notes || '';
+  renderCriteria();
+  updateTotalDisplay();
+  renderTeamGrid();
+  document.getElementById('scoring-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function updateScore(critId, val) {
+  if (!currentTeam) return;
+  scores[currentTeam][critId] = parseInt(val);
+  document.getElementById(`score-val-${critId}`).textContent = val;
+  updateTotalDisplay();
+}
+
+function calcTotal(teamId) {
+  const s = scores[teamId];
+  let total = 0;
+  CRITERIA.forEach(c => { total += (s[c.id] || 0) * (c.weight / 100); });
+  return total;
+}
+
+function updateTotalDisplay() {
+  if (!currentTeam) return;
+  const total = calcTotal(currentTeam);
+  document.getElementById('total-score').textContent = total.toFixed(2);
+}
+
+function saveScores() {
+  if (!currentTeam) return;
+  scores[currentTeam].notes = document.getElementById('judge-notes').value;
+  localStorage.setItem('inuka_plp_scores', JSON.stringify(scores));
+  showToast('✅ Scores saved for ' + TEAMS.find(t => t.id === currentTeam).name);
+  renderTeamGrid();
+}
+
+function renderLeaderboard() {
+  const ranked = TEAMS.map(t => ({ ...t, total: calcTotal(t.id) })).sort((a, b) => b.total - a.total);
+  const body = document.getElementById('leaderboard-body');
+  body.innerHTML = ranked.map((t, i) => {
+    const s = scores[t.id];
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}`;
+    const rowClass = i < 3 ? 'bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-transparent' : '';
+    return `
+      <tr class="leaderboard-row border-b border-white/5 hover:bg-white/5 transition-colors ${rowClass}" style="animation-delay: ${i * 0.05}s">
+        <td class="p-4 font-bold text-lg">${medal}</td>
+        <td class="p-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">${t.icon}</span>
+            <span class="font-semibold">${t.name}</span>
+          </div>
+        </td>
+        <td class="p-4 font-mono text-sm" style="color: #00d4ff;">${s.relevance}</td>
+        <td class="p-4 font-mono text-sm" style="color: #7c4dff;">${s.technical}</td>
+        <td class="p-4 font-mono text-sm" style="color: #e91e63;">${s.insight}</td>
+        <td class="p-4 font-mono text-sm" style="color: #ff9800;">${s.usability}</td>
+        <td class="p-4 font-mono text-sm" style="color: #00e5c8;">${s.presentation}</td>
+        <td class="p-4 text-right">
+          <span class="text-lg font-bold gradient-text">${t.total.toFixed(2)}</span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  const podium = document.getElementById('podium');
+  const top3 = ranked.slice(0, 3);
+  const podiumOrder = [1, 0, 2];
+  const medals = ['medal-silver', 'medal-gold', 'medal-bronze'];
+  const labels = ['2nd', '1st', '3rd'];
+  podium.innerHTML = podiumOrder.map((idx, pos) => {
+    if (!top3[idx]) return '';
+    const t = top3[idx];
+    return `
+      <div class="glass rounded-2xl p-6 flex flex-col items-center text-center fade-in" style="animation-delay: ${pos * 0.1}s; border-top: 3px solid ${t.color};">
+        <div class="w-16 h-16 rounded-full ${medals[pos]} flex items-center justify-center text-2xl font-bold text-white shadow-lg mb-3">
+          ${pos === 1 ? '👑' : labels[pos]}
+        </div>
+        <div class="text-4xl mb-2">${t.icon}</div>
+        <div class="font-bold text-lg">${t.name}</div>
+        <div class="text-4xl font-bold gradient-text mt-3">${t.total.toFixed(2)}</div>
+        <div class="text-xs text-slate-400 mt-1">/ 100 points</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRubric() {
+  const container = document.getElementById('rubric-cards');
+  container.innerHTML = CRITERIA.map(c => `
+    <div class="glass rounded-2xl p-6 fade-in" style="border-top: 3px solid ${c.color};">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-3xl">${c.icon}</span>
+        <div>
+          <h3 class="font-bold text-lg">${c.name}</h3>
+          <span class="text-xs px-2.5 py-1 rounded-full font-mono inline-block mt-1" style="background: ${c.color}15; color: ${c.color}; border: 1px solid ${c.color}30;">Weight: ${c.weight}%</span>
+        </div>
+      </div>
+      <p class="text-sm text-slate-300 leading-relaxed">${c.description}</p>
+    </div>
+  `).join('');
+}
+
+function switchTab(tab) {
+  ['judge', 'leaderboard', 'rubric'].forEach(t => {
+    document.getElementById(`view-${t}`).classList.toggle('hidden', t !== tab);
+    document.getElementById(`tab-${t}`).classList.toggle('tab-active', t === tab);
+    document.getElementById(`tab-${t}`).classList.toggle('text-slate-400', t !== tab);
+  });
+  if (tab === 'leaderboard') renderLeaderboard();
+  if (tab === 'rubric') renderRubric();
+}
+
+function refreshLeaderboard() { renderLeaderboard(); showToast('🔄 Leaderboard refreshed'); }
+
+function resetAll() {
+  if (!confirm('Reset ALL scores? This cannot be undone.')) return;
+  TEAMS.forEach(t => { scores[t.id] = { relevance: 0, technical: 0, insight: 0, usability: 0, presentation: 0, notes: '' }; });
+  localStorage.removeItem('inuka_plp_scores');
+  currentTeam = null;
+  document.getElementById('scoring-panel').classList.add('hidden');
+  document.getElementById('empty-state').classList.remove('hidden');
+  renderTeamGrid();
+  showToast('🗑 All scores reset');
+}
+
+function exportResults() {
+  const ranked = TEAMS.map(t => ({ team: t.name, ...scores[t.id], total: calcTotal(t.id) })).sort((a, b) => b.total - a.total);
+  let csv = 'Rank,Team,Relevance (25%),Technical (25%),Insight (20%),Usability (15%),Presentation (15%),Total,Notes\n';
+  ranked.forEach((r, i) => {
+    csv += `${i+1},"${r.team}",${r.relevance},${r.technical},${r.insight},${r.usability},${r.presentation},${r.total.toFixed(2)},"${(r.notes||'').replace(/"/g,'""')}"\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'inuka_plp_hackathon_scores.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('📥 CSV exported');
+}
+
+function showToast(msg) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'save-toast glass rounded-xl px-5 py-3 text-sm font-medium shadow-xl border border-cyan-500/20';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+renderTeamGrid();
+</script>
+</body>
+</html>
